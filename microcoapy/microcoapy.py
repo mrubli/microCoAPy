@@ -2,8 +2,14 @@ try:
     import usocket as socket
 except ImportError:
     pass
-import uos
-import utime as time
+try:
+    import uos as os
+except ImportError:
+    import os
+try:
+    import utime as time
+except ImportError:
+    import time
 from . import coap_macros as macros
 from .coap_packet import CoapPacket
 
@@ -124,7 +130,7 @@ class Coap:
         self.state = self.TRANSMISSION_STATE.STATE_IDLE
         # messageId field: 16bit -> 0-65535
         # urandom to generate 2 bytes
-        randBytes = uos.urandom(2)
+        randBytes = os.urandom(2)
         packet.messageid = (randBytes[0] << 8) | randBytes[1]
         packet.setUriHost(ip)
         packet.setUriPath(url)
