@@ -270,11 +270,29 @@ class Coap:
 
         return False
 
+    def ticks_ms(self):
+        try:
+            return time.ticks_ms()
+        except AttributeError:
+            return int(time.time() * 1000)
+
+    def ticks_diff(self, t1, t2):
+        try:
+            return time.ticks_diff(t1, t2)
+        except AttributeError:
+            return t1 - t2
+
+    def sleep_ms(self, ms):
+        try:
+            time.sleep_ms(ms)
+        except AttributeError:
+            time.sleep(ms / 1000.0)
+
     def poll(self, timeoutMs=-1, pollPeriodMs=500):
-        start_time = time.ticks_ms()
+        start_time = self.ticks_ms()
         status = False
         while not status:
             status = self.loop(False)
-            if (time.ticks_diff(time.ticks_ms(), start_time) >= timeoutMs): break
-            time.sleep_ms(pollPeriodMs)
+            if (self.ticks_diff(self.ticks_ms(), start_time) >= timeoutMs): break
+            self.sleep_ms(pollPeriodMs)
         return status
