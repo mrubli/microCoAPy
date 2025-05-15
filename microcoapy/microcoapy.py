@@ -115,7 +115,7 @@ class Coap:
 
         return status
 
-    def send(self, ip, port, url, type, method, token, payload, content_format, query_option):
+    def send(self, ip, port, url, type, method, token, payload, content_format, query_option, options = None):
         packet = CoapPacket()
         packet.type = type
         packet.method = method
@@ -123,6 +123,8 @@ class Coap:
         packet.payload = payload
         packet.content_format = content_format
         packet.query = query_option
+        for opt in options or []:
+            packet.addOption(opt.number, opt.buffer)
 
         return self.sendEx(ip, port, url, packet)
 
@@ -151,8 +153,8 @@ class Coap:
         return self.sendPacket(ip, port, packet)
 
     #Confirmable
-    def get(self, ip, port, url, token=bytearray()):
-        return self.send(ip, port, url, macros.COAP_TYPE.COAP_CON, macros.COAP_METHOD.COAP_GET, token, None, macros.COAP_CONTENT_FORMAT.COAP_NONE, None)
+    def get(self, ip, port, url, token=bytearray(), options=None):
+        return self.send(ip, port, url, macros.COAP_TYPE.COAP_CON, macros.COAP_METHOD.COAP_GET, token, None, macros.COAP_CONTENT_FORMAT.COAP_NONE, None, options)
 
     def put(self, ip, port, url, payload=bytearray(), query_option=None, content_format=macros.COAP_CONTENT_FORMAT.COAP_NONE, token=bytearray()):
         return self.send(ip, port, url, macros.COAP_TYPE.COAP_CON, macros.COAP_METHOD.COAP_PUT, token, payload, content_format, query_option)
